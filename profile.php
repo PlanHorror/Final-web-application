@@ -25,7 +25,7 @@ $user_info = $user->getUserById($_SESSION['user']['id']);
   crossorigin="anonymous" />
   <style>
     body {
-        background-image: url('https://img.freepik.com/free-photo/blue-concrete-wall-texture-background_53876-145494.jpg?t=st=1732945156~exp=1732948756~hmac=c1d9969fb5e16f6104a39bea2c9d132e5c6778a31d716e6be1772bb23576e44a&w=1380')
+        background-image: url('media/background.jpg')
     }
     .information {
         background: rgba(255, 255, 255, 0.1);

@@ -72,8 +72,12 @@ unset($_SESSION['success']);
         <div class="hero-content">
             <h2>Welcome to Hanoi Marathon</h2>
             <p>Challenge yourself and conquer the marathon course.</p>
+            <?php if (!isset($_SESSION['user'])): ?>
             <a href="register.php" class="btn btn-outline-light btn-lg">Register Now</a>
             <a href="login.php" class="btn btn-outline-light btn-lg">Login</a>
+            <?php else: ?>
+            <a href="raceregister.php" class="btn btn-outline-light btn-lg">Register race</a>
+            <?php endif; ?>
         </div>
     </section>
 
@@ -139,9 +143,9 @@ unset($_SESSION['success']);
     </div>
         <!-- Register Button -->
         <div class="text-center mt-5">
-        <a href="/register" class="btn btn-primary btn-lg">Register for Race</a>
+        <a href="raceregister.php" class="btn btn-primary btn-lg">Register for Race</a>
     </div>
-</section>
+    </section>
 
 <!-- Add JavaScript to handle image modal -->
 

@@ -1,0 +1,134 @@
+<!-- Add Font Awesome CDN for Icons -->
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+<style>
+  .mask-custom {
+    backdrop-filter: blur(5px);
+    background-color: rgba(255, 255, 255, 0.25);
+    /* background-color: black; */
+  }
+  .dropdown-item {
+    /* background-color: #fff; */
+    color: #fff !important;
+  }
+  .dropdown-item:hover {
+    background-color: #fff;
+    color: #000 !important;
+  }
+
+  .dropdown-menu {
+    background-color: #929292;
+  }
+
+  .navbar-custom a {
+    color: #ececec; /* Light grey text color */
+    text-decoration: none; /* Remove underline */
+    font-size: 1.25rem; /* Increase font size for links */
+  }
+
+  .navbar-custom a:hover {
+    color: #fff; /* Change text color on hover */
+  }
+
+  .navbar-custom .navbar-brand {
+    font-weight: bold; /* Bold title */
+    font-size: 2rem; /* Increase font size for the brand */
+    margin-left: 30px; /* Add space to the left of the brand */
+    display: flex; /* Use flexbox to align items */
+    align-items: center; /* Vertically align the icon and title */
+  }
+  .navbar-nav .nav-link.active,
+  .navbar-nav .nav-link:focus {
+    color: #ececec !important; /* Keep the text color consistent */
+  }
+  /* Dropdown toggle links */
+  .navbar-nav .nav-link.dropdown-toggle {
+    color: #ececec !important; /* Keep consistent text color */
+    background-color: transparent !important; /* No background change */
+    outline: none !important; /* Remove focus outline */
+  }
+</style>
+<nav
+  class="navbar navbar-expand-lg navbar-light navbar-custom mask-custom fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/marathon/admin/">
+      <!-- Home icon -->
+      <span style="color: #b5ffed"> A</span>dmin
+    </a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/marathon/admin/">Dashboard</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            id="raceDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false">
+            Races
+          </a>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="raceDropdown">
+            <li>
+              <a class="dropdown-item" role="menuitem" href="racelist.php"
+                >Race List</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item" role="menuitem" href="createrace.php"
+                >Create New Race</a
+              >
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            id="participantsDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false">
+            Management
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="participantsDropdown">
+            <li>
+              <a class="dropdown-item" href="participantlist.php"
+                >Participant Management</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item" href="userlist.php">User Management</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="navbar-nav">
+        <li class="nav-item auth">
+          <a class="nav-link" href="profile.php"
+            ><i class="bi bi-person"></i>
+          </a>
+        </li>
+        <li class="nav-item non-auth">
+          <a class="nav-link" href="login.php">Login</a>
+        </li>
+        <li class="nav-item auth">
+          <a class="nav-link" href="logout.php">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

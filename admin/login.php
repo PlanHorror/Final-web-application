@@ -1,33 +1,42 @@
 <?php
 spl_autoload_register(function ($class_name) {
-    include __DIR__ . '/src/' . $class_name . '.php';
+    include __DIR__ . '/../src/' . $class_name . '.php';
 });
-$user = new User();
 session_start();
+$db = new Database();
+$admins = new Admin();
 // Check if user is logged in
-// if (isset($_SESSION['user'])) {
-//     header('Location: index.php');
-//     $_SESSION['error'] = 'You are already logged in';
-//     exit;
-// }
+if (isset($_SESSION['user'])) {
+    if ($_SESSION['user']['admin']) {
+        header('Location: index.php');
+        $_SESSION['error'] = 'You are already logged in';
+        exit;
+    } else {
+        unset($_SESSION['user']);
+        unset($_SESSION['success']);
+        unset($_SESSION['error']);
+        header('Location: login.php');
+        $_SESSION['error'] = 'Your account does not have the necessary permissions to access this page';
+        exit;
+    }
+}
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $res = $user->login($_POST);
+    $res = $admins->login($_POST);
     if (empty($res['errors'])) {
+        $admin = $admins->getAdminByName($_POST['username']);
         // Authenticate user
-        
-        $user = $user->getUserByName($_POST['username']);
-        $_SESSION['user'] = $user;
+        $_SESSION['user'] = $admin;
         $_SESSION['success'] = 'You are now logged in';
         header('Location: index.php');
         exit;
     } else {
-        $errors = $res['errors'];
+        $errors = $res['errors'] ?? [];
     }
     
 }
 $successMessage = $_SESSION["success"] ?? null;
 unset($_SESSION['success']);
-$errorMessage = $_SESSION['error'] ?? null;
+$errorMessage = $_SESSION['error'] ?? null; 
 unset($_SESSION['error']);
 ?>
 <!DOCTYPE html>
@@ -43,7 +52,7 @@ unset($_SESSION['error']);
   crossorigin="anonymous" />
   <style>
     body {
-        background-image: url('media/background.jpg')
+        background-image: url('../media/background.jpg');
     }
     input {
         font-size: 1.25rem;
@@ -59,12 +68,7 @@ unset($_SESSION['error']);
         padding: 20px;
     }
     .lbg {
-        border-radius: 20px 0px 0px 20px;
-    }
-    img {
-        width: 100%;
-        height: 100%;
-        border-radius: 0px 20px 20px 0px;
+        border-radius: 20px 20px 20px 20px;
     }
     .login-form {
         height: 100%;
@@ -93,31 +97,35 @@ unset($_SESSION['error']);
         font-size: 90%;
         height: 15%;
     }
-  </style>
+    .auth {
+        display: none;
+    }
+    .non-auth {
+        display: block;
+    }
+    </style>
 </head>
 <body>
-    <?php include 'template/navbar.html'; ?>
-    <?php include 'template/message.php'; ?>
+    <?php include '../template/admin-navbar.html'; ?>
+    <?php include '../template/message.php'; ?>
     <div class="container-fluid banner">
     </div>
-    <div class="container" style="height: 80vh; width:60vw">
+    <div class="container" style=" width:40vw">
         <div class="row h-100">
             <div class="col-12 d-flex justify-content-center align-items-center h-100">
                 <div class="blur-background d-flex w-100 h-100">
-                    <div class="col-md-6 d-flex justify-content-center align-items-center h-100">
+                    <div class="col-md-12 d-flex justify-content-center align-items-center">
                         <div class="bg-light p-5 w-100 h-100 lbg">
-                            <form method="POST" action="" class="login-form">
-                                <div class="title-form"><h2>Login</h2></div>
-                                
-                                <div class="input-form" >
-                                    <input type="text" class="form-control h-100" id="username" name="username" placeholder="Username" required style="font-size: 110%;">
-                                    <input type="password" class="form-control h-100" id="password" name="password" placeholder="Password" required style="font-size: 110%;">
+                            <form method="POST" action="">
+                                <h2 class="text-center mb-5">Login</h2>
+                                <div class="mb-4">
+                                    <input type="text" class="form-control" id="username" name="username" placeholder="Username" required style="font-size: 1.5rem;">
                                 </div>
-                                <div class="submit-form">
-                                    <button type="submit" class="btn btn-primary w-100" style="font-size:110%;">Login</button>
+                                <div class="mb-4">
+                                    <input type="password" class="form-control" id="password" name="password" placeholder="Password" required style="font-size: 1.5rem;">
                                 </div>
-                                <div class="register-form">
-                                    <a href="register.php" style="font-size: 100%;">Don't have an account? Register</a>
+                                <div class="mb-4">
+                                    <button type="submit" class="btn btn-primary w-100" style="font-size: 1.5rem;">Login</button>
                                 </div>
                                 <?php if (!empty($errors)): ?>
                                         <ul>
@@ -129,12 +137,11 @@ unset($_SESSION['error']);
                             </form>
                         </div>
                     </div>
-                    <div class="col-md-6 d-flex justify-content-center align-items-center img">
-                        <img src="https://as1.ftcdn.net/v2/jpg/02/74/96/22/1000_F_274962214_Vn3bT2SMFWrujUtdfa3ZImipjYoy5wsR.jpg" alt="Login Image">
-                    </div>
                 </div>
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

@@ -41,12 +41,27 @@ class Database {
         $stmt->execute([$id]);
         return $stmt->fetch();
     }
+    public function readAll($table) {
+        $sql = 'SELECT * FROM ' . $table;
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
     public function update($data, $table) {
+        $id = $data['id'];
         $keys = array_keys($data);
         $values = array_values($data);
-        $sql = 'UPDATE ' . $table . ' SET ' . implode(' = ?, ', $keys) . ' = ? WHERE id = ?';
+        $sql = 'UPDATE ' . $table . ' SET ';
+        foreach ($keys as $key) {
+            if ($key !== 'id') {
+                $sql .= $key . ' = :' . $key . ', ';
+            }
+        }
+        $sql = rtrim($sql, ', ');
+        $sql .= ' WHERE id = :id';
         $stmt = $this->conn->prepare($sql);
-        return $stmt->execute($values);
+        $stmt->execute($data);
+
     }
     public function delete($id, $table) {
         $sql = 'DELETE FROM ' . $table . ' WHERE id = ?';
@@ -60,6 +75,7 @@ class Database {
     }
     public function getUser($data) {
        if (array_key_exists('email', $data)) {
+        
             $sql = 'SELECT * FROM users WHERE email = :email';
             $stmt = $this->conn->prepare($sql);
             $stmt->execute(['email' => $data['email']]);

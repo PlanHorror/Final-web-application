@@ -4,6 +4,12 @@ spl_autoload_register(function ($class_name) {
 });
 $user = new User();
 session_start();
+// Check if user is logged in
+// if (isset($_SESSION['user'])) {
+//     header('Location: index.php');
+//     $_SESSION['error'] = 'You are already logged in';
+//     exit;
+// }
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $res = $user->register($_POST);
     if (empty($res['errors'])) {
@@ -35,7 +41,7 @@ unset($_SESSION['success']);
   <style>
     body {
         /* background-color: #0b2447; */
-        background-image: url('https://img.freepik.com/free-photo/blue-concrete-wall-texture-background_53876-145494.jpg?t=st=1732945156~exp=1732948756~hmac=c1d9969fb5e16f6104a39bea2c9d132e5c6778a31d716e6be1772bb23576e44a&w=1380')
+        background-image: url('media/background.jpg')
     }
     .banner {
         height: 150px;
@@ -54,13 +60,10 @@ unset($_SESSION['success']);
         height: 100%;
         border-radius: 0px 20px 20px 0px;
     }
-    .error {
+    .error-login {
         color: red;
-        font-size: 1.25rem;
-    }
-    .success {
-        color: green;
-        font-size: 1.25rem;
+        font-size: 90%;
+        height: 15%;
     }
   </style>
 </head>
@@ -69,7 +72,7 @@ unset($_SESSION['success']);
     <?php include 'template/message.php'; ?>
     <div class="container-fluid banner">
     </div>
-    <div class="container" style=" width:40vw">
+    <div class="container" style="">
         <div class="row h-100">
             <div class="col-12 d-flex justify-content-center align-items-center h-100">
                 <div class="blur-background d-flex w-100 h-100">
@@ -99,7 +102,7 @@ unset($_SESSION['success']);
                                 <?php if (!empty($errors)): ?>
                                         <ul>
                                             <?php foreach ($errors as $error): ?>
-                                                <li class="error"><?php echo htmlspecialchars($error); ?></li>
+                                                <li class="error-login"><?php echo htmlspecialchars($error); ?></li>
                                             <?php endforeach; ?>
                                         </ul>
                                 <?php endif; ?>
