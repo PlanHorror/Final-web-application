@@ -18,11 +18,21 @@ if (!isset($_SESSION['user'])) {
         exit;
     }
 }
-
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $res = $admin->createRace($_POST, $_FILES);
+    if (empty($res['errors'])) {
+        $_SESSION['success']='Race created successfully!';
+        header('Location: index.php');
+        exit;
+    } else {
+        $errors = $res['errors'];
+    }
+}
 $successMessage = $_SESSION["success"] ?? null;
 unset($_SESSION['success']);
 $errorMessage = $_SESSION["error"] ?? null;
 unset($_SESSION['error']);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -44,9 +54,16 @@ unset($_SESSION['error']);
         .banner {
             height: 20vh;
         }
+        .form-create-race {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 150px;
+
+        }
         .form-container {
-            max-width: 700px;
-            margin: 50px auto;
+            
             padding: 20px;
             background-color: rgba(255, 255, 255, 0.9);
             border-radius: 10px;
@@ -78,32 +95,30 @@ unset($_SESSION['error']);
         .non-auth {
         display: none;
         }   
+        .error-login {
+            color: red;
+            font-size: 90%;
+            height: 15%;
+        }
     </style>
 </head>
 <body>
 <?php include '../template/admin-navbar.html'; ?>
 <?php include '../template/message.php'; ?>
-    <div class="container">
-        <div class="banner"></div>
-        <div class="form-container">
+    <div class="container form-create-race">
+        <div class="form-container ">
             <h1>Create Race</h1>
-            <form id="raceForm" method="POST" enctype="multipart/form-data">
+            <form id="raceForm h-100 w-100" method="POST" enctype="multipart/form-data">
                 <!-- Race Name -->
                 <div class="mb-3">
                     <label for="race_name" class="form-label">Race Name</label>
                     <input type="text" class="form-control" id="race_name" name="race_name" required>
                 </div>
-
-                <!-- Start Registration Date -->
+                
+                <!-- Entry prefix -->
                 <div class="mb-3">
-                    <label for="start_reg" class="form-label">Start Registration</label>
-                    <input type="date" class="form-control" id="start_reg" name="start_reg" required>
-                </div>
-
-                <!-- End Registration Date -->
-                <div class="mb-3">
-                    <label for="end_reg" class="form-label">End Registration</label>
-                    <input type="date" class="form-control" id="end_reg" name="end_reg" required>
+                    <label for="entry_prefix" class="form-label">Entry Prefix</label>
+                    <input type="text" class="form-control" id="entry_prefix" name="entry_prefix" required>
                 </div>
 
                 <!-- Race Start DateTime -->
@@ -122,11 +137,18 @@ unset($_SESSION['error']);
                     <button type="button" class="btn btn-add" id="addField">Add Image & Description</button>
                     <button type="button" class="btn btn-remove d-none" id="removeField">Remove Last</button>
                 </div>
-
+                <input type="hidden" name="create_by_id" value="<?php echo htmlspecialchars($user_info['id']); ?>">
                 <!-- Submit Button -->
                 <div class="text-center mt-4">
                     <button type="submit" class="btn btn-primary">Create Race</button>
                 </div>
+                <?php if (!empty($errors)): ?>
+                    <ul>
+                        <?php foreach ($errors as $error): ?>
+                            <li class="error-login"><?php echo htmlspecialchars($error); ?></li>
+                        <?php endforeach;?>
+                    </ul>
+                <?php endif; ?>
             </form>
         </div>
     </div>
@@ -148,10 +170,10 @@ unset($_SESSION['error']);
                 fieldGroup.setAttribute("data-field-id", fieldCount);
                 fieldGroup.innerHTML = `
                     <label for="image_${fieldCount}" class="form-label">Image ${fieldCount}</label>
-                    <input type="file" class="form-control" id="image_${fieldCount}" name="image_${fieldCount}" accept="image/*">
+                    <input type="file" class="form-control" id="image_${fieldCount}" name="image_${fieldCount}" accept="image/*" required>
 
                     <label for="description_${fieldCount}" class="form-label mt-3">Description ${fieldCount}</label>
-                    <textarea class="form-control" id="description_${fieldCount}" name="description_${fieldCount}" rows="3"></textarea>
+                    <textarea class="form-control" id="description_${fieldCount}" name="description_${fieldCount}" rows="3" required></textarea>
                 `;
 
                 dynamicFields.appendChild(fieldGroup);

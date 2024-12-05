@@ -5,6 +5,7 @@ spl_autoload_register(function ($class_name) {
 session_start();
 $db = new Database();
 $admin = new Admin();
+$race = new Race();
 // Check if user is logged in
 if (!isset($_SESSION['user'])) {
     header('Location: login.php');
@@ -17,10 +18,13 @@ if (!isset($_SESSION['user'])) {
         $_SESSION['error'] = 'You must be an admin to access this page';
         exit;
     }
-}
 
+}
+$all_races = $race->getRaces();
 $successMessage = $_SESSION["success"] ?? null;
 unset($_SESSION['success']);
+$errorMessage = $_SESSION["error"] ?? null;
+unset($_SESSION['error']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -48,15 +52,34 @@ unset($_SESSION['success']);
             padding: 20px;
             border-radius: 10px;
         }
+        .gallery {
+            margin-top: 10px;
+            justify-content: center;
+        }
         .gallery img {
             width: 100%;
-            max-width: 150px;
+            max-width: 390px;
             margin: 5px;
             cursor: pointer;
+            border-radius: 20px;
         }
+
         .gallery img:hover {
             transform: scale(1.1);
             transition: transform 0.2s;
+        }
+
+        .gallery-item {
+            align-items: center;
+            margin: 15px;
+            max-width: 30%;
+        }
+
+        .gallery-item p {
+            font-size: 14px;
+            color: #555;
+            margin-top: 5px;
+            margin-left: 5px;
         }
         .non-auth {
         display: none;
@@ -83,141 +106,23 @@ unset($_SESSION['success']);
                 <!-- Race Dropdown -->
                 <div class="accordion" id="raceAccordion">
 
-                    <!-- Coming Soon Race -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingOne">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#race1" aria-expanded="true" aria-controls="race1">
-                                Spring Marathon 2024
-                            </button>
-                        </h2>
-                        <div id="race1" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#raceAccordion">
-                            <div class="accordion-body">
-                                <!-- Race Info -->
-                                <h5>Race Information</h5>
-                                <p><strong>Status:</strong> Coming Soon</p>
-                                <p><strong>Start Registration:</strong> 2024-04-01</p>
-                                <p><strong>End Registration:</strong> 2024-04-05</p>
-                                <p><strong>Start Race:</strong> 2024-04-10 09:00</p>
-
-                                <!-- Standing Table -->
-                                <h5>Standings</h5>
-                                <table class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>Entry number</th>
-                                            <th>Name</th>
-                                            <th>Time Record</th>
-                                            <th>Standings</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td colspan="6" class="text-center">No data now</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-
-                                <!-- Gallery -->
-                                <h5>Gallery</h5>
-                                <div class="gallery d-flex flex-wrap">
-                                    <img src="../media/image1.jpg" alt="Race Image 1">
-                                    <img src="../media/image2.jpg" alt="Race Image 2">
-                                    <img src="../media/image3.jpg" alt="Race Image 3">
-                                    <img src="../media/image4.jpg" alt="Race Image 4">
-                                    <img src="../media/image5.jpg" alt="Race Image 5">
-                                    <img src="../media/image6.jpg" alt="Race Image 6">
-                                </div>
-
-                                <!-- Buttons -->
-                                <div class="mt-3">
-                                    <a href="#" class="btn btn-info">Edit</a>
-                                    <a href="#" class="btn btn-danger">Delete</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Scoring Time Race -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingTwo">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#race2" aria-expanded="false" aria-controls="race2">
-                                Summer Sprint 2024
-                            </button>
-                        </h2>
-                        <div id="race2" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#raceAccordion">
-                            <div class="accordion-body">
-                                <!-- Race Info -->
-                                <h5>Race Information</h5>
-                                <p><strong>Status:</strong> Scoring Time</p>
-                                <p><strong>Start Registration:</strong> 2024-05-01</p>
-                                <p><strong>End Registration:</strong> 2024-05-10</p>
-                                <p><strong>Start Race:</strong> 2024-05-15 09:00</p>
-
-                                <!-- Standing Table -->
-                                <h5>Standings</h5>
-                                <table class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>Entry number</th>
-                                            <th>Name</th>
-                                            <th>Time Record</th>
-                                            <th>Standings</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>20241</td>
-                                            <td>John Doe</td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>20242</td>
-                                            <td>Jane Doe</td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-
-                                <!-- Gallery -->
-                                <h5>Gallery</h5>
-                                <div class="gallery d-flex flex-wrap">
-                                    <img src="../media/image7.jpg" alt="Race Image 1">
-                                    <img src="../media/image8.jpg" alt="Race Image 2">
-                                    <img src="../media/image9.jpg" alt="Race Image 3">
-                                    <img src="../media/image10.jpg" alt="Race Image 4">
-                                    <img src="../media/image11.jpg" alt="Race Image 5">
-                                    <img src="../media/image12.jpg" alt="Race Image 6">
-                                </div>
-
-                                <!-- Buttons -->
-                                <div class="mt-3">
-                                    <a href="#" class="btn btn-info">Edit</a>
-                                    <a href="#" class="btn btn-danger">Delete</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Add more races as needed -->
-                     <!-- Ended Race -->
+                    <?php foreach ($all_races as $race): ?>
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingThree">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#race3" aria-expanded="false" aria-controls="race3">
-                                Autumn Challenge 2024
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#race<?php echo $race['id'] ?>" aria-expanded="false" aria-controls="#race<?php echo $race['id'] ?>">
+                                <?php echo $race['race_name']; ?>
                             </button>
                         </h2>
-                        <div id="race3" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#raceAccordion">
+                        <div id="race<?php echo $race['id'] ?>" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#raceAccordion">
                             <div class="accordion-body">
                                 <!-- Race Info -->
                                 <h5>Race Information</h5>
-                                <p><strong>Status:</strong> Ended</p>
-                                <p><strong>Start Registration:</strong> 2024-03-01</p>
-                                <p><strong>End Registration:</strong> 2024-03-05</p>
-                                <p><strong>Start Race:</strong> 2024-03-10 09:00</p>
-
+                                <p><strong>Status:</strong> <?php echo $race['status']; ?></p>
+                                <p><strong>Start Race:</strong> <?php echo $race['race_start']; ?></p>
+                                <p><strong>Total Participants:</strong> <?php echo $race['total_participants']; ?></p>
+                                <p><strong>Winner:</strong> <?php echo $race['winner']['name'] ?? 'No winner yet'; ?></p>
                                 <!-- Standing Table -->
-                                <h5>Standings</h5>
+                                <!-- <h5>Standings</h5>
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
@@ -247,26 +152,31 @@ unset($_SESSION['success']);
                                             <td>3rd</td>
                                         </tr>
                                     </tbody>
-                                </table>
+                                </table> -->
 
                                 <!-- Gallery -->
                                 <h5>Gallery</h5>
                                 <div class="gallery d-flex flex-wrap">
-                                    <img src="../media/image13.jpg" alt="Race Image 1">
-                                    <img src="../media/image14.jpg" alt="Race Image 2">
-                                    <img src="../media/image15.jpg" alt="Race Image 3">
-                                    <img src="../media/image16.jpg" alt="Race Image 4">
-                                    <img src="../media/image17.jpg" alt="Race Image 5">
-                                    <img src="../media/image18.jpg" alt="Race Image 6">
+                                    <?php foreach ($race['images'] as $image): ?>
+                                        <div class="gallery-item">
+                                            <img src="<?php echo $image['url']; ?>" alt="<?php echo htmlspecialchars($image['description']); ?>" class="img-fluid">
+                                            <p><?php echo htmlspecialchars($image['description']); ?></p>
+                                        </div>
+                                    <?php endforeach; ?>
                                 </div>
-
+                                <?php if (count($race['images']) === 0) : ?>
+                                    <p>No images available</p>
+                                <?php endif; ?>                                    
                                 <!-- Buttons -->
-                                <div class="mt-3">
+                                <div class="mt-4">
+                                    <a href="editrace.php?id=<?php echo $race['id'] ?>" class="btn btn-info">Edit</a>
                                     <a href="#" class="btn btn-danger">Delete</a>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <?php endforeach; ?>
+                        
                 </div>
             </div>
         </div>

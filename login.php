@@ -5,20 +5,14 @@ spl_autoload_register(function ($class_name) {
 $user = new User();
 session_start();
 // Check if user is logged in
-// if (isset($_SESSION['user'])) {
-//     header('Location: index.php');
-//     $_SESSION['error'] = 'You are already logged in';
-//     exit;
-// }
+if (isset($_SESSION['user'])) {
+    // header('Location: index.php');
+    // $_SESSION['error'] = 'You are already logged in';
+    // exit;
+}
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $res = $user->login($_POST);
     if (empty($res['errors'])) {
-        // Authenticate user
-        
-        $user = $user->getUserByName($_POST['username']);
-        $_SESSION['user'] = $user;
-        $_SESSION['success'] = 'You are now logged in';
-        header('Location: index.php');
         exit;
     } else {
         $errors = $res['errors'];
@@ -93,6 +87,9 @@ unset($_SESSION['error']);
         font-size: 90%;
         height: 15%;
     }
+    .auth {
+        display: none;
+    }
   </style>
 </head>
 <body>
@@ -110,7 +107,7 @@ unset($_SESSION['error']);
                                 <div class="title-form"><h2>Login</h2></div>
                                 
                                 <div class="input-form" >
-                                    <input type="text" class="form-control h-100" id="username" name="username" placeholder="Username" required style="font-size: 110%;">
+                                    <input type="email" class="form-control h-100" id="email" name="email" placeholder="Email" required style="font-size: 110%;">
                                     <input type="password" class="form-control h-100" id="password" name="password" placeholder="Password" required style="font-size: 110%;">
                                 </div>
                                 <div class="submit-form">
@@ -123,14 +120,14 @@ unset($_SESSION['error']);
                                         <ul>
                                             <?php foreach ($errors as $error): ?>
                                                 <li class="error-login"><?php echo htmlspecialchars($error); ?></li>
-                                            <?php endforeach;  ?>
+                                            <?php endforeach;  var_dump($_POST)?>
                                         </ul>
-                                <?php endif; ?>
+                                <?php endif;?>
                             </form>
                         </div>
                     </div>
                     <div class="col-md-6 d-flex justify-content-center align-items-center img">
-                        <img src="https://as1.ftcdn.net/v2/jpg/02/74/96/22/1000_F_274962214_Vn3bT2SMFWrujUtdfa3ZImipjYoy5wsR.jpg" alt="Login Image">
+                        <img src="media/login.jpeg" alt="Login Image">
                     </div>
                 </div>
             </div>

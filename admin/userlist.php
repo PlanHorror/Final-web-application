@@ -87,7 +87,7 @@ $users = $admin->getAllUsers() ?? [];
                 <div class="main">
                     <div class="card shadow">
                         <div class="card-header text-center">
-                        User List
+                            User List
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -97,7 +97,14 @@ $users = $admin->getAllUsers() ?? [];
                                             <th scope="col">ID</th>
                                             <th scope="col">Name</th>
                                             <th scope="col">Email</th>
+                                            <th scope="col">Nationality</th>
+                                            <th scope="col">Gender</th>
+                                            <th scope="col">Age</th>
+                                            <th scope="col">Passport No</th>
+                                            <th scope="col">Address</th>
+                                            <th scope="col">Phone Number</th>
                                             <th scope="col">Role</th>
+                                            <th scope="col">Best Record</th>
                                             <th scope="col">Total Races</th>
                                             <th scope="col">Created At</th>
                                             <th scope="col">Delete</th>
@@ -106,7 +113,7 @@ $users = $admin->getAllUsers() ?? [];
                                     <tbody>
                                         <?php if (empty($users)) : ?>
                                             <tr>
-                                                <td colspan="5" class="text-center text-muted">
+                                                <td colspan="14" class="text-center text-muted">
                                                     <i class="bi bi-info-circle"></i> No users found
                                                 </td>
                                             </tr>
@@ -114,16 +121,22 @@ $users = $admin->getAllUsers() ?? [];
                                         <?php foreach ($users as $user) : ?>
                                             <tr>
                                                 <td><?= array_search($user, $users) + 1 ?></td>
-                                                    <td><?= htmlspecialchars($user['username']) ?></td>
-                                                    <td><?= htmlspecialchars($user['email'],) ?></td>
-                                                    <td><?= $user['admin'] ? 'Admin' : 'User' ?></td>
-                                                    <td><?= htmlspecialchars($user['total_race'] ?? '0') ?></td>
-                                                    <td><?= htmlspecialchars($user['create_at']) ?></td>
+                                                <td><?= htmlspecialchars($user['name']) ?></td>
+                                                <td><?= htmlspecialchars($user['email']) ?></td>
+                                                <td><?= htmlspecialchars($user['nationality'] ?? 'N/A') ?></td>
+                                                <td><?= htmlspecialchars($user['gender'] ?? 'N/A') ?></td>
+                                                <td><?= htmlspecialchars($user['age'] ?? 'N/A') ?></td>
+                                                <td><?= htmlspecialchars($user['passport_no'] ?? 'N/A') ?></td>
+                                                <td><?= htmlspecialchars($user['address'] ?? 'N/A') ?></td>
+                                                <td><?= htmlspecialchars($user['phone_number'] ?? 'N/A') ?></td>
+                                                <td><?= $user['admin'] ? 'Admin' : 'User' ?></td>
+                                                <td><?= htmlspecialchars($user['best_record'] ?? 'N/A') ?></td>
+                                                <td><?= htmlspecialchars($user['total_race'] ?? '0') ?></td>
+                                                <td><?= htmlspecialchars($user['create_at']) ?></td>
                                                 <td>
-                                                <a href="deleteuser.php?id=<?= $user['id'] ?>" class="btn btn-sm btn-danger" aria-label="Delete User <?= $user['username'] ?>">
-                                                    <i class="bi bi-trash"></i> Delete
-                                                </a>
-
+                                                    <a href="deleteuser.php?id=<?= $user['id'] ?>" class="btn btn-sm btn-danger" aria-label="Delete User <?= $user['name'] ?>">
+                                                        <i class="bi bi-trash"></i> Delete
+                                                    </a>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>
@@ -135,6 +148,7 @@ $users = $admin->getAllUsers() ?? [];
                 </div>
             </div>
         </div>
+
     </div>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>

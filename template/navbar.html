@@ -60,15 +60,22 @@
     </a>
 
     <nav class="ms-auto" style="margin-right: 29px">
-      <!-- Profile Button with Icon -->
-      <a href="profile.php" class="icon-btn">
-        <i class="bi bi-person-fill"></i>
-        <!-- Profile icon -->
-      </a>
-
-      <!-- Register and Login Links -->
-      <a href="register.php" class="me-3">Register</a>
-      <a href="login.php">Login</a>
+      <ul class="navbar-nav">
+        <li class="nav-item auth">
+          <a class="nav-link" href="profile.php"
+            ><i class="bi bi-person"></i>
+          </a>
+        </li>
+        <li class="nav-item non-auth">
+          <a class="nav-link" href="login.php">Login</a>
+        </li>
+        <li class="nav-item non-auth">
+          <a class="nav-link" href="register.php">Register</a>
+        </li>
+        <li class="nav-item auth">
+          <a class="nav-link" href="logout.php">Logout</a>
+        </li>
+      </ul>
     </nav>
   </div>
 </header>

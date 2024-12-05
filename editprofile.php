@@ -1,39 +1,37 @@
 <?php
-spl_autoload_register(function ($class_name) {
-    include __DIR__ . '/../src/' . $class_name . '.php';
+spl_autoload_register(function ($class) {
+    require_once 'src/' . $class . '.php';
 });
 session_start();
-$db = new Database();
-$admin = new Admin();
 // Check if user is logged in
 if (!isset($_SESSION['user'])) {
+    $_SESSION['error'] = 'You need to login first';
     header('Location: login.php');
-    $_SESSION['error'] = 'You must be logged ';
     exit;
 }
-$user_info = $admin->getAdminById($_SESSION['user']['id']);
+$user = new User();
+$user_info = $user->getUserById($_SESSION['user']['id']);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $errors = $admin->updateProfile($_POST);
-    if (empty($errors)) {
-        $_SESSION['user'] = $admin->getAdminById($_SESSION['user']['id']);
-        $_SESSION['success'] = 'Profile updated successfully';
-        header('Location: index.php');
+    $res = $user->update($_POST);
+    if (empty($res['errors'])) {
         exit;
     } else {
-        $error = $errors;
+        $errors = $res['errors'];
     }
 }
-$successMessage = $_SESSION["success"] ?? null;
+$successMessage = $_SESSION['success'] ?? null;
 unset($_SESSION['success']);
 $errorMessage = $_SESSION['error'] ?? null;
 unset($_SESSION['error']);
+$countryList = file_get_contents('https://api.first.org/data/v1/countries');
+$countries = json_decode($countryList, true)['data'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
+    <title>Edit Profile</title>
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
@@ -41,10 +39,9 @@ unset($_SESSION['error']);
         crossorigin="anonymous" />
     <style>
         body {
-            background-image: url('../media/background.jpg');
-            background-size: cover;
-            background-attachment: fixed;
+            background-image: url('media/background.jpg');
         }
+        
         .edit-form-container {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
@@ -56,6 +53,7 @@ unset($_SESSION['error']);
             border-radius: 20px;
 
         }
+
         .form-label {
             font-size: 1.2rem;
             font-weight: bold;
@@ -73,13 +71,13 @@ unset($_SESSION['error']);
     </style>
 </head>
 <body>
-    <?php include '../template/admin-navbar.html'; ?>
-    <?php include '../template/message.php'; ?>
+    <?php include 'template/navbar.html'; ?>
+    <?php include 'template/message.php'; ?>
     <div class="container edit-form-container">
         <div class=" form col-md-12 d-flex">
             <div class="bg-light p-5 w-100 h-100 lbg">
             
-            <form action="profile.php" method="POST">
+            <form action="editprofile.php" method="POST">
                 <h2 class="text-center mb-5">Edit Profile</h2>
                 <input type="hidden" name="id" value="<?php echo htmlspecialchars($user_info['id']); ?>">
                 <!-- Full Name -->
@@ -160,9 +158,9 @@ unset($_SESSION['error']);
                     <button type="submit" class="btn btn-primary w-100">Save Changes</button>
                 </div>
 
-                <!-- Back to index -->
+                <!-- Back to profile -->
                 <div class="text-center mt-3">
-                    <a href="index.php" class="btn btn-secondary w-100">Back to Dashboard</a>
+                    <a href="profile.php" class="btn btn-secondary w-100">Back to Profile</a>
                 </div>
                 <?php if (!empty($errors)): ?>
                     <ul>
@@ -175,8 +173,6 @@ unset($_SESSION['error']);
             </div>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

@@ -23,7 +23,7 @@ if (isset($_SESSION['user'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $res = $admins->login($_POST);
     if (empty($res['errors'])) {
-        $admin = $admins->getAdminByName($_POST['username']);
+        $admin = $admins->getAdminByEmail($_POST['email']);
         // Authenticate user
         $_SESSION['user'] = $admin;
         $_SESSION['success'] = 'You are now logged in';
@@ -119,7 +119,7 @@ unset($_SESSION['error']);
                             <form method="POST" action="">
                                 <h2 class="text-center mb-5">Login</h2>
                                 <div class="mb-4">
-                                    <input type="text" class="form-control" id="username" name="username" placeholder="Username" required style="font-size: 1.5rem;">
+                                    <input type="email" class="form-control" id="email" name="email" placeholder="Email" required style="font-size: 1.5rem;">
                                 </div>
                                 <div class="mb-4">
                                     <input type="password" class="form-control" id="password" name="password" placeholder="Password" required style="font-size: 1.5rem;">
@@ -131,9 +131,9 @@ unset($_SESSION['error']);
                                         <ul>
                                             <?php foreach ($errors as $error): ?>
                                                 <li class="error-login"><?php echo htmlspecialchars($error); ?></li>
-                                            <?php endforeach;  ?>
+                                            <?php endforeach;?>
                                         </ul>
-                                <?php endif; ?>
+                                <?php endif;?>
                             </form>
                         </div>
                     </div>

@@ -41,6 +41,20 @@ class Database {
         $stmt->execute([$id]);
         return $stmt->fetch();
     }
+    public function readLastId() {
+        return $this->conn->lastInsertId();
+    }
+    public function readByColumn($column, $value, $table) {
+        $sql = 'SELECT * FROM ' . $table . ' WHERE ' . $column . ' = ?';
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$value]); 
+        return $stmt->fetchAll();
+    }
+    public function query($sql) {
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
     public function readAll($table) {
         $sql = 'SELECT * FROM ' . $table;
         $stmt = $this->conn->prepare($sql);
@@ -80,10 +94,15 @@ class Database {
             $stmt = $this->conn->prepare($sql);
             $stmt->execute(['email' => $data['email']]);
             return $stmt->fetch();
-        } else {
-            $sql = 'SELECT * FROM users WHERE username = :username';
+        } else if (array_key_exists('username', $data)) {
+            $sql = 'SELECT * FROM users WHERE name = :username';
             $stmt = $this->conn->prepare($sql);
             $stmt->execute(['username' => $data['username']]);
+            return $stmt->fetch();
+        } else {
+            $sql = 'SELECT * FROM users WHERE phone_number = :phone_number';
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute(['phone_number' => $data['phone_number']]);
             return $stmt->fetch();
         }
     }

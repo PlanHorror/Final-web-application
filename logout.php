@@ -7,8 +7,8 @@ $db = new Database();
 $user = new User();
 // Check if user is logged in
 if (!isset($_SESSION['user'])) {
+    $_SESSION['error'] = 'You need to login first';
     header('Location: login.php');
-    $_SESSION['error'] = 'You must be logged ';
     exit;
 }
 unset($_SESSION['user']);
