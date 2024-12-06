@@ -26,11 +26,20 @@ if (!$race_id || !$race_info) {
     $_SESSION['error'] = 'Race not found';
     exit;
 }
-
+$errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    var_dump($_POST);
-    var_dump($_FILES);
+    $errors = $race->updateRace($_POST,$_FILES);
+    if(empty($errors)){
+        header('Location: racelist.php');
+        $_SESSION['success'] = 'Update successful';
+        exit;
+    }
+
 }
+$successMessage = $_SESSION["success"] ?? null;
+unset($_SESSION['success']);
+$errorMessage = $_SESSION["error"] ?? null;
+unset($_SESSION['error']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -101,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 <body>
-<?php //include '../template/admin-navbar.html'; ?>
+<?php include '../template/admin-navbar.html'; ?>
 <?php include '../template/message.php'; ?>
 
 <div class="container form-create-race">
@@ -134,11 +143,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php foreach ($race_info['images'] as $index => $image): ?>
                 <div class="mb-3" id="imageField_<?php echo $index + 1; ?>" data-field-id="<?php echo $index + 1; ?>">
                     <label for="image_<?php echo $index + 1; ?>" class="form-label">Image <?php echo $index + 1; ?></label>
-                    <input type="file" class="form-control" id="image_<?php echo $index + 1; ?>" 
-                        name="image_<?php echo $index + 1; ?>" accept="image/*" value="<?php echo $image['url']; ?>" required>
-                    <p>Current: <img src="<?php echo $image['url']; ?>" alt="image_<?php echo $index + 1; ?>" 
-                                    style="width: 100px; height: auto;"></p>
-
+                    <div>
+                    <img src="<?php echo $image['url']; ?>" alt="image_<?php echo $index + 1; ?>" 
+                                    style="width: 300px; height: auto; border-radius:20px">
+                    <input type="hidden" name="image_<?php echo $index + 1; ?>" value="<?php echo $image['url']; ?>">
+                    <input type="hidden" name="old_<?php echo $index + 1; ?>" value="<?php echo $index + 1; ?>">
+                    </div>
                     <label for="description_<?php echo $index + 1; ?>" class="form-label mt-3 form-des">Description <?php echo $index + 1; ?></label>
                     <textarea class="form-control" id="description_<?php echo $index + 1; ?>" 
                             name="description_<?php echo $index + 1; ?>" rows="3" required><?php echo htmlspecialchars($image['description']); ?></textarea>
@@ -193,7 +203,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 field.setAttribute('data-field-id', index);
                 field.id = `imageField_${index}`;
                 field.querySelector('label[for^="image_"]').setAttribute('for', `image_${index}`);
-                field.querySelector('input[name^="image_"]').name = `image_${index}`;
+                field.querySelector('input[name^="image_"]') ? field.querySelector('input[name^="image_"]').name = `image_${index}` : null;
+                field.querySelector('input[name^="old_"]') ? field.querySelector('input[name^="old_"]').name = `old_${index}` : null;
                 field.querySelector('textarea[name^="description_"]').name = `description_${index}`;
                 field.querySelector('label[for^="description_"]').setAttribute('for', `description_${index}`);
                 field.querySelector('.delete-image-btn') ? field.querySelector('.delete-image-btn').id = `delete_image_${index}` : null;
@@ -213,7 +224,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="file" class="form-control" id="image_${fieldCount}" name="image_${fieldCount}" accept="image/*" required>
                 <label for="description_${fieldCount}" class="form-label mt-3 form-des">Description ${fieldCount}</label>
                 <textarea class="form-control" id="description_${fieldCount}" name="description_${fieldCount}" rows="3" required></textarea>
-                <input type="hidden" name="delete_image_${fieldCount}" id="delete_image_${fieldCount}" value="0">
             `;
             dynamicFields.appendChild(fieldGroup);
             changeState();

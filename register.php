@@ -23,7 +23,8 @@ $successMessage = $_SESSION['success'] ?? null;
 unset($_SESSION['success']);
 $errorMessage = $_SESSION['error'] ?? null;
 unset($_SESSION['error']);
-$countryList = file_get_contents('https://api.first.org/data/v1/countries');
+// $countryList = file_get_contents('https://api.first.org/data/v1/countries');
+$countryList = file_get_contents('data/countries.json');
 $countries = json_decode($countryList, true)['data'];
 ?>
 <!DOCTYPE html>
@@ -72,7 +73,7 @@ $countries = json_decode($countryList, true)['data'];
     <div class="container-fluid banner">
     </div>
     <div class="container">
-        <div class="row h-100">
+        <div class="row ">
             <div class="col-12 d-flex justify-content-center align-items-center h-100">
                 <div class="blur-background d-flex w-100 h-100">
                     <div class="col-md-12 d-flex justify-content-center align-items-center">

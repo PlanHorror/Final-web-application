@@ -23,7 +23,7 @@ $successMessage = $_SESSION['success'] ?? null;
 unset($_SESSION['success']);
 $errorMessage = $_SESSION['error'] ?? null;
 unset($_SESSION['error']);
-$countryList = file_get_contents('https://api.first.org/data/v1/countries');
+$countryList = file_get_contents('data/countries.json');
 $countries = json_decode($countryList, true)['data'];
 ?>
 <!DOCTYPE html>

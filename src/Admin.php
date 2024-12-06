@@ -168,7 +168,7 @@ class Admin {
     }
     public function deleteUser($id) {
         $this->db->delete($id, 'users');
-        return "User deleted successfully.";
+        return ;
     }
     public function createRace($data, $files) {
         $errors = $this->validateRaceInfo($data);

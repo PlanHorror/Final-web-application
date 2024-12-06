@@ -171,7 +171,6 @@ unset($_SESSION['error']);
                     </div>
                     <!-- Register Button for Race 2 -->
                     <div class="text-center mt-4">
-                        <?php var_dump($_SESSION) ?>
                         <a href="raceregister.php" class="btn btn-primary btn-lg">Register for Marathon Saigon 2024</a>
                     </div>
                 </div>

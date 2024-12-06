@@ -170,7 +170,7 @@ unset($_SESSION['error']);
                                 <!-- Buttons -->
                                 <div class="mt-4">
                                     <a href="editrace.php?id=<?php echo $race['id'] ?>" class="btn btn-info">Edit</a>
-                                    <a href="#" class="btn btn-danger">Delete</a>
+                                    <a href="deleterace.php?id=<?php echo $race['id'] ?>" class="btn btn-danger">Delete</a>
                                 </div>
                             </div>
                         </div>

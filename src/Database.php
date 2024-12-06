@@ -82,6 +82,11 @@ class Database {
         $stmt = $this->conn->prepare($sql);
         return $stmt->execute([$id]);
     }
+    public function deleteByField($column ,$value ,$table){
+        $sql = 'DELETE FROM ' . $table . ' WHERE ' . $column . ' = ' . $value;
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute();
+    }
     public function addUser($username, $email, $password) {
         $sql = 'INSERT INTO users (username, email, password, admin) VALUES (:username, :email, :password, 0)';
         $stmt = $this->conn->prepare($sql);
