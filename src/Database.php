@@ -92,6 +92,16 @@ class Database {
         $stmt = $this->conn->prepare($sql);
         $stmt->execute(['username' => $username, 'email' => $email, 'password' => $password]);
     }
+    public function counter($condition, $table) {
+        $sql = 'SELECT COUNT(*) FROM ' . $table . ' WHERE ';
+        foreach ($condition as $key => $value) {
+            $sql .= $key . ' = ' . $value . ' AND ';
+        }
+        $sql = rtrim($sql, ' AND ');
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
     public function getUser($data) {
        if (array_key_exists('email', $data)) {
         
@@ -110,6 +120,12 @@ class Database {
             $stmt->execute(['phone_number' => $data['phone_number']]);
             return $stmt->fetch();
         }
+    }
+    public function getRegisteredUsers($race_id, $user_id) {
+        $sql = 'SELECT * FROM register_form where race_id = ' . $race_id . ' AND user_id = ' . $user_id;
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
     }
 }
 ?>

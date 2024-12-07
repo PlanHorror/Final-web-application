@@ -4,8 +4,10 @@ spl_autoload_register(function ($class_name) {
 });
 $db = new Database();
 $user = new User();
+$race = new Race();
 session_start();
 // $_SESSION = [];
+$list_races = $race->getRaces();
 $successMessage = $_SESSION['success'] ?? null;
 unset($_SESSION['success']);
 $errorMessage = $_SESSION['error'] ?? null;
@@ -107,75 +109,39 @@ unset($_SESSION['error']);
     <section class="container py-5">
     <!-- Marathon Title -->
     <h2 class="text-center mb-4">Marathons 2024</h2>
-
     <!-- Dropdown List of Marathons -->
     <div class="accordion" id="raceAccordion">
-        <!-- Race 1 -->
+
+        <!-- Races -->
+        <?php foreach ($list_races as $race): ?>
         <div class="accordion-item">
-            <h2 class="accordion-header" id="headingOne">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                    Marathon Hanoi 2024
+            <h2 class="accordion-header" id="heading<?php echo $race['id']; ?>">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?php echo $race['id']; ?>" aria-expanded="false" aria-controls="collapse<?php echo $race['id']; ?>">
+                    <?php echo $race['race_name']; ?>
                 </button>
             </h2>
-            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#raceAccordion">
+            <div id="collapse<?php echo $race['id']; ?>" class="accordion-collapse collapse" aria-labelledby="heading<?php echo $race['id']; ?>" data-bs-parent="#raceAccordion">
                 <div class="accordion-body">
-                    <!-- Grid of images for Race 1 -->
+                    <!-- Grid of images -->
                     <div class="row g-4">
                         <!-- Image & Description 1 -->
-                        <div class="col-md-4 col-sm-6">
-                            <a href="#" class="image-link" data-bs-toggle="modal" data-bs-target="#imageModal" data-bs-img="https://cdn.hcmcmarathon.com/wp-content/uploads/42KM.png" data-bs-desc="The Spring Marathon takes place in April 2024, offering a scenic route through Hanoi.">
-                                <img src="https://cdn.hcmcmarathon.com/wp-content/uploads/42KM.png" class="img-fluid rounded" alt="Image 1">
-                            </a>
-                        </div>
-                        <!-- Image & Description 2 -->
-                        <div class="col-md-4 col-sm-6">
-                            <a href="#" class="image-link" data-bs-toggle="modal" data-bs-target="#imageModal" data-bs-img="https://cdn.hcmcmarathon.com/wp-content/uploads/42KM.png" data-bs-desc="The Summer Marathon will be in June 2024, with exciting challenges and fun activities for runners of all levels.">
-                                <img src="https://cdn.hcmcmarathon.com/wp-content/uploads/42KM.png" class="img-fluid rounded" alt="Image 2">
-                            </a>
-                        </div>
-                        <!-- Additional images and descriptions can be added here -->
+                        
+                            <?php foreach ($race['images'] as $image): ?>
+                            <div class="col-md-4 col-sm-6">
+                                <a href="#" class="image-link " data-bs-toggle="modal" data-bs-target="#imageModal" data-bs-img="<?php echo substr($image['url'],1); ?>" data-bs-desc="<?php echo $image['description']; ?>">
+                                    <img src="<?php echo substr($image['url'],1); ?>" class="img-fluid rounded" alt="Image 1">
+                                </a>
+                            </div>
+                            <?php endforeach; ?>
+                        
                     </div>
-
-                    <!-- Description Under All Images -->
-                    <p class="mt-4">
-                        Each image represents a special moment or key detail about the Marathon Hanoi 2024. Prepare to experience breathtaking routes, diverse challenges, and an unforgettable atmosphere as you participate in this grand event!
-                    </p>
-
-                    <!-- Register Button for Race 1 -->
                     <div class="text-center mt-4">
-                        <a href="raceregister.php" class="btn btn-primary btn-lg">Register for Marathon Hanoi 2024</a>
+                        <a href="raceregister.php?id=<?php echo $race['id'] ?>" class="btn btn-primary btn-lg">Register for <?php echo $race['race_name'] ?> </a>
                     </div>
                 </div>
             </div>
         </div>
-
-
-        <!-- Race 2 -->
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="headingTwo">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                    Marathon Saigon 2024
-                </button>
-            </h2>
-            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#raceAccordion">
-                <div class="accordion-body">
-                    <!-- Grid of images for Race 2 -->
-                    <div class="row g-4">
-                        <!-- Image & Description 1 -->
-                        <div class="col-md-4 col-sm-6">
-                            <a href="#" class="image-link" data-bs-toggle="modal" data-bs-target="#imageModal" data-bs-img="https://cdn.hcmcmarathon.com/wp-content/uploads/42KM.png" data-bs-desc="The Saigon Marathon is an exciting event in September 2024, with thrilling routes through the heart of the city.">
-                                <img src="https://cdn.hcmcmarathon.com/wp-content/uploads/42KM.png" class="img-fluid rounded" alt="Image 1">
-                            </a>
-                        </div>
-                        <!-- More images and descriptions can go here -->
-                    </div>
-                    <!-- Register Button for Race 2 -->
-                    <div class="text-center mt-4">
-                        <a href="raceregister.php" class="btn btn-primary btn-lg">Register for Marathon Saigon 2024</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <?php endforeach; ?>    
     </div>
 
     <!-- Modal for displaying clicked image with description -->

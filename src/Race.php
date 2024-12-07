@@ -184,6 +184,33 @@ class Race {
         }
         $this->db->delete($id, 'race');
     }
+    public function registerRace($race_id, $entry_prefix , $user_id, $hotel_name=null){
+        // Check if user already registered
+        $register = $this->db->getRegisteredUsers($race_id, $user_id);
+        if(!empty($register)){
+            return 'You have already registered for this race';
+        }
+        $index = $this->db->counter([
+            'race_id' => $race_id,
+        ], 'register_form') + 1;
+        if($hotel_name){
+            $this->db->create([
+                'race_id' => $race_id,
+                'user_id' => $user_id,
+                'hotel_name' => $hotel_name
+            ], 'register_form');
+        } else {
+            $this->db->create([
+                'race_id' => $race_id,
+                'user_id' => $user_id,
+            ], 'register_form');
+        }
+        // return $register[0]['index'];
+
+        $this->db->query('UPDATE register_form SET entry_number = "' . $entry_prefix. '_' . $index . '" WHERE race_id = ' . $race_id . ' AND user_id = ' . $user_id);
+        return;
+    }
+        
 }
 
 

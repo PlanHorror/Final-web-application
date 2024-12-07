@@ -24,12 +24,18 @@ class Admin {
         $errors = [];
         if (!empty($data['email']) && !empty($data['password'])) {
             $user = $this->db->getUser(['email' => $data['email']]);
-            if (!$user || !password_verify($data['password'], $user['password'])) {
+            if(!$user) {
                 $errors[] = 'Invalid email or password';
             }
-            if ($user['admin'] === 0) {
-                $errors[] = 'You must be an admin to access this page';
+            else {
+                if (!password_verify($data['password'], $user['password'])) {
+                    $errors[] = 'Invalid email or password';
+                }
+                if ($user['admin'] === 0) {
+                    $errors[] = 'You must be an admin to access this page';
+                }
             }
+            
         } else {
             $errors[] = 'Email and password are required';
         }

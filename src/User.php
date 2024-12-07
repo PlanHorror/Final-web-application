@@ -199,7 +199,8 @@ class User {
         return $this->db->readById($id, 'users');
     }
     public function getUserAchievements($id) {
-        return $this->db->readByColumn('user_id', $id, 'register_form');
+        $sql = 'SELECT * from (SELECT * FROM register_form WHERE user_id =' . $id . ') as reg LEFT JOIN (SELECT * FROM race) as r ON r.id = reg.race_id';
+        return $this->db->query($sql);
     }
 }
 

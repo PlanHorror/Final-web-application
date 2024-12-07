@@ -59,7 +59,7 @@ unset($_SESSION['error']);
         margin-bottom: 5%;
     }
     .banner {
-        height: 150px;
+        height: 20vh;
     }
     .blur-background {
         background: rgba(255, 255, 255, 0.1);
@@ -111,9 +111,9 @@ unset($_SESSION['error']);
     <div class="container-fluid banner">
     </div>
     <div class="container" style=" width:40vw">
-        <div class="row h-100">
-            <div class="col-12 d-flex justify-content-center align-items-center h-100">
-                <div class="blur-background d-flex w-100 h-100">
+        <div class="row ">
+            <div class="col-12 d-flex justify-content-center align-items-center">
+                <div class="blur-background d-flex w-100 ">
                     <div class="col-md-12 d-flex justify-content-center align-items-center">
                         <div class="bg-light p-5 w-100 h-100 lbg">
                             <form method="POST" action="">
@@ -133,7 +133,7 @@ unset($_SESSION['error']);
                                                 <li class="error-login"><?php echo htmlspecialchars($error); ?></li>
                                             <?php endforeach;?>
                                         </ul>
-                                <?php endif;?>
+                                <?php endif; ?>
                             </form>
                         </div>
                     </div>

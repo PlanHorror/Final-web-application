@@ -22,7 +22,6 @@ unset($_SESSION['error']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile</title>
-    <link rel="stylesheet" href="styles.css">
     <link
   href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
   rel="stylesheet"
@@ -150,10 +149,12 @@ unset($_SESSION['error']);
                                             echo '<tr>';
                                             echo '<td>' . htmlspecialchars($race['entry_number']) . '</td>';
                                             echo '<td>' . htmlspecialchars($race['race_name']) . '</td>';
-                                            echo '<td>' . htmlspecialchars($race['time_record']) . '</td>';
+                                            $race['time_record'] = $race['time_record'] ?? 'N/A';
+                                            echo '<td>' . htmlspecialchars($race['time_record']) .'</td>';
+                                            $race['standings'] = $race['standings'] ?? 'N/A';
                                             echo '<td>' . htmlspecialchars($race['standings']) . '</td>';
+                                            $race['hotel_name'] = $race['hotel_name'] ?? 'N/A';
                                             echo '<td>' . htmlspecialchars($race['hotel_name']) . '</td>';
-                                            echo '</tr>';
                                         } 
                                         } else {
                                             echo '<tr><td colspan="5" class="text-center">No race history available.</td></tr>';
