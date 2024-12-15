@@ -93,6 +93,12 @@ class Database {
         $stmt->execute(['username' => $username, 'email' => $email, 'password' => $password]);
     }
     public function counter($condition, $table) {
+        if (empty($condition)) {
+            $sql = 'SELECT COUNT(*) FROM ' . $table;
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchColumn();
+        }
         $sql = 'SELECT COUNT(*) FROM ' . $table . ' WHERE ';
         foreach ($condition as $key => $value) {
             $sql .= $key . ' = ' . $value . ' AND ';

@@ -5,6 +5,7 @@ spl_autoload_register(function ($class_name) {
 session_start();
 $db = new Database();
 $admin = new Admin();
+$race = new Race();
 // Check if user is logged in
 if (!isset($_SESSION['user'])) {
     header('Location: login.php');
@@ -18,7 +19,11 @@ if (!isset($_SESSION['user'])) {
         exit;
     }
 }
-
+$current = 'index.php';
+$totalCourses = $race->getTotalRaces();
+$totalParticipants = $race->getTotalParticipants();
+$totalUpcomingRaces = $race->getUpcomingRaces();
+$races = $race->getRaces();
 $successMessage = $_SESSION["success"] ?? null;
 unset($_SESSION['success']);
 $errorMessage = $_SESSION["error"] ?? null;
@@ -100,7 +105,7 @@ unset($_SESSION['error']);
             <div class="card stat-card">
                 <div class="card-body">
                     <h5>Total Courses</h5>
-                    <div class="count">12</div>
+                    <div class="count"><?php echo $totalCourses ?></div>
                 </div>
             </div>
         </div>
@@ -108,7 +113,7 @@ unset($_SESSION['error']);
             <div class="card stat-card">
                 <div class="card-body">
                     <h5>Total Participants</h5>
-                    <div class="count">248</div>
+                    <div class="count"><?php echo $totalParticipants ?></div>
                 </div>
             </div>
         </div>
@@ -116,7 +121,7 @@ unset($_SESSION['error']);
             <div class="card stat-card">
                 <div class="card-body">
                     <h5>Upcoming Races</h5>
-                    <div class="count">5</div>
+                    <div class="count"><?php echo $totalUpcomingRaces[0][0]  ?></div>
                 </div>
             </div>
         </div>
@@ -136,45 +141,29 @@ unset($_SESSION['error']);
                         <th>Total Members</th>
                         <th>Status</th>
                         <th>Winner</th>
-                        <th>Start Registration</th>
-                        <th>End Registration</th>
                         <th>Start Race</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Sample Data Row -->
-                    <tr>
-                        <td>1</td>
-                        <td>Spring Marathon 2024</td>
-                        <td>150</td>
-                        <td>Registration Time</td>
-                        <td></td>
-                        <td>2024-04-01</td>
-                        <td>2024-04-05</td>
-                        <td>2024-04-10 09:00</td>
-                        <td>
-                            <a href="#" class="btn btn-info btn-sm">Edit</a>
-                            <a href="#" class="btn btn-danger btn-sm">Delete</a>
-                            <a href="#" class="btn btn-secondary btn-sm">Gallery</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Summer Sprint 2024</td>
-                        <td>200</td>
-                        <td>Coming Soon</td>
-                        <td></td>
-                        <td>2024-05-01</td>
-                        <td>2024-05-10</td>
-                        <td>2024-05-15 09:00</td>
-                        <td>
-                            <a href="#" class="btn btn-info btn-sm">Edit</a>
-                            <a href="#" class="btn btn-danger btn-sm">Delete</a>
-                            <a href="#" class="btn btn-secondary btn-sm">Gallery</a>
-                        </td>
-                    </tr>
                     <!-- Add more rows here as needed -->
+                    <?php foreach ($races as $race) : ?>
+                    <tr>
+                        <td><?php echo $race['stt'] ?></td>
+                        <td><?php echo $race['race_name'] ?></td>
+                        <td><?php echo $race['total_participants'] ?></td>
+                        <td><?php echo $race['status'] ?></td>
+                        <td><?php echo isset($race['winner']) ? $race['winner']['name'] : 'No winner yet' ?></td>
+                        <td><?php echo $race['race_start'] ?></td>
+                        <td>
+                            <a href="editrace.php?id=<?php echo $race['id'] ?>" class="btn btn-info btn-sm">Edit</a>
+                            <a href="deleterace.php?id=<?php echo $race['id'] ?>&n=<?php echo $current ?>
+                            " class="btn btn-danger btn-sm">Delete</a>
+                            <a href="gallery.php?id=<?php echo $race['id'] ?>" class="btn btn-secondary btn-sm">Gallery</a>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+
                 </tbody>
             </table>
         </div>

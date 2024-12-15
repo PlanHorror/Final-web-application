@@ -20,6 +20,7 @@ if (!isset($_SESSION['user'])) {
     }
 
 }
+$current = 'racelist.php';
 $all_races = $race->getRaces();
 $successMessage = $_SESSION["success"] ?? null;
 unset($_SESSION['success']);
@@ -120,7 +121,7 @@ unset($_SESSION['error']);
                                 <p><strong>Status:</strong> <?php echo $race['status']; ?></p>
                                 <p><strong>Start Race:</strong> <?php echo $race['race_start']; ?></p>
                                 <p><strong>Total Participants:</strong> <?php echo $race['total_participants']; ?></p>
-                                <p><strong>Winner:</strong> <?php echo $race['winner']['name'] ?? 'No winner yet'; ?></p>
+                                <p><strong>Winner:</strong> <?php echo isset($race['winner']) ? $race['winner']['name'] : 'No winner yet' ?> </p>
                                 <!-- Standing Table -->
                                 <!-- <h5>Standings</h5>
                                 <table class="table table-bordered">
@@ -170,7 +171,8 @@ unset($_SESSION['error']);
                                 <!-- Buttons -->
                                 <div class="mt-4">
                                     <a href="editrace.php?id=<?php echo $race['id'] ?>" class="btn btn-info">Edit</a>
-                                    <a href="deleterace.php?id=<?php echo $race['id'] ?>" class="btn btn-danger">Delete</a>
+                                    <a href="deleterace.php?id=<?php echo $race['id'] ?>&n=<?php echo $current ?>
+                                    " class="btn btn-danger">Delete</a>
                                 </div>
                             </div>
                         </div>

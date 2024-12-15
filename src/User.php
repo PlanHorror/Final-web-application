@@ -196,11 +196,48 @@ class User {
         return ['id' => $user['id'], 'username' => $user['username'], 'email' => $user['email'], 'admin' => $user['admin']];
     }
     public function getUserById($id) {
-        return $this->db->readById($id, 'users');
+        $user = $this->db->readById($id, 'users');
+        // Prepare the time record
+        if (!isset($user['best_record']) ||$user['best_record'] == null) {
+            $user['best_record'] = 'N/A';
+        } else {
+            // Format the time record HH:MM:SS
+            $time = $user['best_record'];
+            $hours = floor($time / 3600);
+            $minutes = floor(($time / 60) % 60);
+            $seconds = $time % 60;
+            $user['best_record'] = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+        }
+        return $user;
     }
     public function getUserAchievements($id) {
         $sql = 'SELECT * from (SELECT * FROM register_form WHERE user_id =' . $id . ') as reg LEFT JOIN (SELECT * FROM race) as r ON r.id = reg.race_id';
-        return $this->db->query($sql);
+        $data = $this->db->query($sql);
+        foreach ($data as $key => $value) {
+            // Prepare the time record
+            if ($value['time_record'] == null) {
+                $data[$key]['time_record'] = 'N/A';
+            } else {
+                // Format the time record HH:MM:SS
+                $time = $value['time_record'];
+                $hours = floor($time / 3600);
+                $minutes = floor(($time / 60) % 60);
+                $seconds = $time % 60;
+                $data[$key]['time_record'] = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+            }
+        }
+        return $data;
+    }
+    public function updateBestRecord() {
+        $users = $this->db->readAll('users');
+        foreach ($users as $user) {
+            $sql = 'SELECT MIN(time_record) FROM register_form WHERE user_id =' . $user['id'] . ' AND time_record <> 0';
+            $best_record = $this->db->query($sql);
+            if(!$best_record) {
+                $best_record = [['MIN(time_record)' => null]];
+            }
+            $this->db->update(['id' => $user['id'], 'best_record' => $best_record[0]['MIN(time_record)']], 'users');
+        }
     }
 }
 

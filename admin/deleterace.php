@@ -19,6 +19,7 @@ if (!isset($_SESSION['user'])) {
         exit;
     }
 }
+$current = $_GET['n'] ?? null;
 $race_id = $_GET['id'] ?? null;
 $race = $races->getRaceById($race_id) ?? null;
 if (!$race) {
@@ -28,7 +29,7 @@ if (!$race) {
 } else {
     $races->deleteRace($race_id);
     $_SESSION['success'] = 'Deleted successfully';
-    header('Location: racelist.php');
+    header('Location: ' . $current);
     exit;
 }
 ?>

@@ -17,7 +17,10 @@ class Race {
         $participants = $this->db->readAll('register_form');
         // Compare today's date with race_start date
         $today = date('Y-m-d' . 'H:i:s');
+        $stt = 1;
         foreach ($races as $key => $race) {
+            $races[$key]['stt'] = $stt;
+            $stt++;
             $images = [];
             $users = [];
             if ($race['race_start'] >= $today) {
@@ -33,7 +36,10 @@ class Race {
             foreach ($participants as $participant) {
                 if($participant['race_id'] == $race['id']) {
                     $users[] = $participant;
-                    $participant['standings'] == 1 ? $race['winner'] = $participant : null;
+                    if ($participant['standings'] == 1) {
+                        $user = $this->db->readById($participant['user_id'], 'users');
+                        $races[$key]['winner'] = $user;
+                    }
                 }
             }
             $races[$key]['images'] = $images;
@@ -210,7 +216,93 @@ class Race {
         $this->db->query('UPDATE register_form SET entry_number = "' . $entry_prefix. '_' . $index . '" WHERE race_id = ' . $race_id . ' AND user_id = ' . $user_id);
         return;
     }
-        
+    public function getParticipants(){
+        // Get all races
+        $races = $this->db->readAll('race');
+        // Get all participants
+        foreach($races as $key => $value){
+            $sql = 'select * from (SELECT * FROM register_form WHERE race_id = ' . $value['id'] . ') as reg JOIN users ON reg.user_id = users.id';
+            $participants = $this->db->query($sql);
+            $races[$key]['participants'] = $participants;
+            if (empty($participants)){
+                $races[$key]['total'] = 0;
+            }else{
+                foreach($participants as $key1 => $participant){
+                    // Preprocess time
+                    if($participant['time_record']){
+                        // Make output hh:mm:ss
+                        $time = $participant['time_record'];
+                        $hours = floor($time / 3600);
+                        $hours = $hours < 10 ? '0' . $hours : $hours;
+                        $minutes = floor(($time - $hours * 3600) / 60);
+                        $minutes = $minutes < 10 ? '0' . $minutes : $minutes;
+                        $seconds = $time - $hours * 3600 - $minutes * 60;
+                        $seconds = $seconds < 10 ? '0' . $seconds : $seconds;
+                        $participants[$key1]['time_record'] = $hours . ':' . $minutes . ':' . $seconds; 
+                    } else if ($participant['time_record'] == 0){
+                        $participants[$key1]['time_record'] = '00:00:00';
+                    }
+                }
+            }
+            // Sort participants by standings if standings are available and standings are not 0
+            usort($participants, function($a, $b){
+                if (!isset($a['standings']) || !isset($b['standings'])){
+                    return 0;
+                }
+                if($a['standings'] == 0){
+                    return 1;
+                } else if($b['standings'] == 0){
+                    return -1;
+                }
+                return $a['standings'] - $b['standings'];
+            });
+            $races[$key]['participants'] = $participants;
+        }
+        return $races;
+    }
+    public function updateTimeRecord($data){
+        $race_id = $data['race_id'];
+        unset($data['race_id']);
+        // Preprocess time
+        foreach($data as $key => $value){
+            if ($value == ''){
+                $data[$key] = [0];
+                continue;
+            }
+            $time = explode(':',$value);
+            $time = (int)$time[0] * 3600 + (int)$time[1] * 60 + (int)$time[2];
+            $data[$key] = [$time];
+        }
+        // Sort data by time record min to max
+        asort($data);
+        // Set standings
+        $index = 1;
+        foreach($data as $key => $value){
+            if($data[$key] == [0]){
+                $data[$key][] = 0;
+                continue;
+            }
+            $data[$key][] = $index;
+            $index++;
+        }
+        //Update time record
+        foreach($data as $key => $value){
+            $this->db->query('UPDATE register_form SET time_record = ' . $value[0] . ', standings = ' . $value[1] . ' WHERE race_id = ' . $race_id . ' AND user_id = ' . $key);
+        }
+        // Update status race
+        $this->db->update(['id' => $race_id, 'status' => 1], 'race');
+    }
+    public function getTotalRaces(){
+        return $this->db->counter([],'race');
+    }
+    public function getTotalParticipants(){
+        return $this->db->counter([],'register_form');
+    }
+    public function getUpcomingRaces(){
+        $today = date('Y-m-d ' . 'H:i:s');
+        $sql = 'SELECT COUNT(*) FROM race where race_start > "' . $today . '";';
+        return $this->db->query($sql);
+    }
 }
 
 

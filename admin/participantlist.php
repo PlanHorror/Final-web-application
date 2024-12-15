@@ -6,6 +6,7 @@ spl_autoload_register(function ($class_name) {
 $db = new Database();
 $race = new Race();
 $admin = new Admin();
+$users = new User();
 if (!isset($_SESSION['user'])) {
     header('Location: login.php');
     $_SESSION['error'] = 'You must be logged in to access this page';
@@ -18,6 +19,18 @@ if (!isset($_SESSION['user'])) {
         exit;
     }
 }
+$races = $race->getParticipants();
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $race->updateTimeRecord($_POST);
+    $users->updateBestRecord();
+    $_SESSION['success'] = 'Record updated successfully';
+    header('Location: participantlist.php');
+    exit;
+}
+$successMessage = $_SESSION["success"] ?? null;
+unset($_SESSION['success']);
+$errorMessage = $_SESSION['error'] ?? null; 
+unset($_SESSION['error']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -48,11 +61,19 @@ if (!isset($_SESSION['user'])) {
         .non-auth {
             display: none;
         }
+        .extended-time-input {
+      border: 2px solid #4CAF50;
+      border-radius: 5px;
+      padding: 10px;
+      font-size: 16px;
+      outline: none;
+      width: 100%;
+    }
     </style>
 </head>
 <body>
-    <?php include '../template/admin-navbar.html'; ?>
-    <?php include '../template/message.php'; ?>
+<?php include '../template/admin-navbar.html'; ?>
+<?php include '../template/message.php'; ?>
 
     <div class="container-fluid banner"></div>  
     <div class="container mt-4 main">
@@ -63,95 +84,127 @@ if (!isset($_SESSION['user'])) {
         </div>
 
         <!-- Race Registration Dropdowns -->
-        <div class="accordion" id="raceAccordion">
+       
+        <div class="accordion"id="raceAccordion">
+            <?php foreach ($races as $race) : ?>
             <div class="accordion-item">
-                <h2 class="accordion-header" id="headingSpringMarathon">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpringMarathon" aria-expanded="true" aria-controls="collapseSpringMarathon">
-                        Spring Marathon 2024
+                <h2 class="accordion-header" id="heading<?php echo$race['id']?>">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_<?php echo$race['id']?>" aria-expanded="false" aria-controls="collapse_<?php echo$race['id']?>">
+                        <?php echo $race['race_name']; ?>
                     </button>
                 </h2>
-                <div id="collapseSpringMarathon" class="accordion-collapse collapse show" aria-labelledby="headingSpringMarathon" data-bs-parent="#raceAccordion">
+                <div id="collapse_<?php echo$race['id']?>" class="accordion-collapse collapse" aria-labelledby="heading<?php echo$race['id']?>" data-bs-parent="#raceAccordion">
                     <div class="accordion-body">
-                        <table class="table table-bordered">
+                        <form action="participantlist.php" method="post">
+                        <input type="hidden" name="race_id" value="<?php echo $race['id']; ?>">
+                        <table class="table table-bordered"  style="width: 100%; table-layout: fixed;">
                             <thead>
                                 <tr>
-                                    <th>Entry Number</th>
-                                    <th>Username</th>
-                                    <th>Nationality</th>
-                                    <th>Gender</th>
-                                    <th>Age</th>
-                                    <th>Race Bib</th>
-                                    <th>Passport No</th>
-                                    <th>Address</th>
-                                    <th>Mobile Phone</th>
-                                    <th>Hotel Name</th>
+                                    <th style="width: 11%;">Entry Number</th>
+                                    <th style="width: 10%;">Name</th>
+                                    <th style="width: 9%;">Nationality</th>
+                                    <th style="width: 7%;">Gender</th>
+                                    <th style="width: 5%;">Age</th>
+                                    <!-- <th style="width: 10%;">Mobile Phone</th> -->
+                                    <th style="width: 21%;">Email</th>
+                                    <th style="width: 6%;">Hotel Name</th>
+                                    <th style="width: 15%;">Record</th>
+                                    <th style="width: 8%;">Standing</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                <?php if (!isset($race['total'])) : ?>
+                                <?php foreach ($race['participants'] as $participant) : ?>
                                 <tr>
-                                    <td>1</td>
-                                    <td>John Doe</td>
-                                    <td>USA</td>
-                                    <td>Male</td>
-                                    <td>30</td>
-                                    <td>1234</td>
-                                    <td>A12345678</td>
-                                    <td>123 Main Street, New York, NY</td>
-                                    <td>+1 123 456 7890</td>
-                                    <td>Grand Hotel</td>
+                                    
+                                    <td><?php echo $participant['entry_number']; ?></td>
+                                    <td><?php echo $participant['name']; ?></td>
+                                    <td><?php echo $participant['nationality']; ?></td>
+                                    <td><?php echo $participant['gender']; ?></td>
+                                    <td><?php echo $participant['age']; ?></td>
+                                    
+                                    <td><?php echo $participant['email']; ?></td>
+                                    <td><?php echo $participant['hotel_name']?$participant['hotel_name']: 'N/A'; ?></td>
+                                    <td><input 
+                                    id="extended-time" 
+                                    type="text" 
+                                    class="extended-time-input" 
+                                    placeholder="HH:MM:SS" 
+                                    name="<?php echo $participant['id']?>" 
+                                    value="<?php echo $participant['time_record']?>"
+                                    style="width: 100%;"
+                                    ></td>
+                                    <td><?php echo $participant['standings']?$participant['standings']: 'N/A'; ?></td>
+                                    
                                 </tr>
-                            </tbody>
+                                <?php endforeach; ?>
+                                <?php else : ?>
+                                <tr>
+                                    <td colspan="12" style="text-align:center">No participants yet</td>
+                                </tr>
+                                <?php endif; ?>
+                        </tbody>
                         </table>
+                        <button type="submit" class="btn btn-primary" style="width:100%">Update Record</button>
+                        </form>
                     </div>
                 </div>
             </div>
-
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="headingSummerSprint">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSummerSprint" aria-expanded="false" aria-controls="collapseSummerSprint">
-                        Summer Sprint 2024
-                    </button>
-                </h2>
-                <div id="collapseSummerSprint" class="accordion-collapse collapse" aria-labelledby="headingSummerSprint" data-bs-parent="#raceAccordion">
-                    <div class="accordion-body">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Entry Number</th>
-                                    <th>Username</th>
-                                    <th>Nationality</th>
-                                    <th>Gender</th>
-                                    <th>Age</th>
-                                    <th>Race Bib</th>
-                                    <th>Passport No</th>
-                                    <th>Address</th>
-                                    <th>Mobile Phone</th>
-                                    <th>Hotel Name</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>Jane Smith</td>
-                                    <td>UK</td>
-                                    <td>Female</td>
-                                    <td>27</td>
-                                    <td>5678</td>
-                                    <td>B98765432</td>
-                                    <td>456 Elm Street, London</td>
-                                    <td>+44 20 7946 0958</td>
-                                    <td>Royal Inn</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+            <?php endforeach;?>
         </div>
+        
+                    
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const timeInputs = document.querySelectorAll(".extended-time-input");
+
+        timeInputs.forEach((input) => {
+            // Auto-format input to HH:MM:SS
+            input.addEventListener("input", (e) => {
+                let value = e.target.value;
+
+                // Remove invalid characters
+                value = value.replace(/[^0-9:]/g, '');
+
+                // Auto-add colons to format input as HH:MM:SS
+                if (value.length > 2 && value[2] !== ":") {
+                    value = value.slice(0, 2) + ":" + value.slice(2);
+                }
+                if (value.length > 5 && value[5] !== ":") {
+                    value = value.slice(0, 5) + ":" + value.slice(5);
+                }
+                if (value.length > 8) {
+                    value = value.slice(0, 8); // Max length is HH:MM:SS
+                }
+                // Dont allow more than 60 minutes or seconds
+                if (value[3] > 5) {
+                    value = value.slice(0, 3) + "5" + value.slice(4);
+                }
+                if (value[6] > 5) {
+                    value = value.slice(0, 6) + "5" + value.slice(7);
+                }
+                e.target.value = value;
+            });
+
+            // Validate time format on blur
+            input.addEventListener("blur", (e) => {
+                const value = e.target.value;
+                const timeRegex = /^([0-9][0-9]):([0-5][0-9]):([0-5][0-9])$/;
+
+                if (!timeRegex.test(value)) {
+                    
+                    e.target.value = ""; // Clear input on invalid format
+                }
+            });
+        });
+    });
+</script>
+
+
 </body>
 </html>
 hotel_name

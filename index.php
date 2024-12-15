@@ -7,6 +7,7 @@ $user = new User();
 $race = new Race();
 session_start();
 // $_SESSION = [];
+$today = date('Y-m-d' . ' 23:59:59');
 $list_races = $race->getRaces();
 $successMessage = $_SESSION['success'] ?? null;
 unset($_SESSION['success']);
@@ -125,7 +126,7 @@ unset($_SESSION['error']);
                     <!-- Grid of images -->
                     <div class="row g-4">
                         <!-- Image & Description 1 -->
-                        
+                        <?php if (count($race['images']) > 0): ?>
                             <?php foreach ($race['images'] as $image): ?>
                             <div class="col-md-4 col-sm-6">
                                 <a href="#" class="image-link " data-bs-toggle="modal" data-bs-target="#imageModal" data-bs-img="<?php echo substr($image['url'],1); ?>" data-bs-desc="<?php echo $image['description']; ?>">
@@ -133,11 +134,26 @@ unset($_SESSION['error']);
                                 </a>
                             </div>
                             <?php endforeach; ?>
+                        <?php else: ?>
+                            <div class="col-md-12 col-sm-6"> <!-- No image  -->
+                                <div class="text-center">
+                                    <div class="card-body">
+                                        <p class="card-text fst-italic">No image</p>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
                         
                     </div>
+                    <?php if ($today < $race['race_start']): ?>
                     <div class="text-center mt-4">
                         <a href="raceregister.php?id=<?php echo $race['id'] ?>" class="btn btn-primary btn-lg">Register for <?php echo $race['race_name'] ?> </a>
                     </div>
+                    <?php else : ?>
+                    <div class="text-center mt-4">
+                        <a href=">" class="btn btn-danger btn-lg disabled" tabindex="-1" aria-disabled="true">Registration closed</a>
+                    </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
