@@ -6,9 +6,9 @@ $user = new User();
 session_start();
 // Check if user is logged in
 if (isset($_SESSION['user'])) {
-    // header('Location: index.php');
-    // $_SESSION['error'] = 'You are already logged in';
-    // exit;
+    header('Location: index.php');
+    $_SESSION['error'] = 'You are already logged in';
+    exit;
 }
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $res = $user->login($_POST);

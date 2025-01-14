@@ -178,6 +178,7 @@ class Race {
             if(!empty($errors)){
                 return $errors;
             }
+            $this->updatePrefix($data['entry_prefix'], $race_id);
             return;
         } else {
             return $errors;
@@ -302,6 +303,13 @@ class Race {
         $today = date('Y-m-d ' . 'H:i:s');
         $sql = 'SELECT COUNT(*) FROM race where race_start > "' . $today . '";';
         return $this->db->query($sql);
+    }
+    public function updatePrefix($prefix, $race_id){
+        $participants = $this->db->readByColumn('race_id', $race_id, 'register_form');
+        foreach($participants as $key => $participant){
+            $new_entry_number = $prefix . '_' . explode('_',$participant['entry_number'])[1];
+            $this->db->query('UPDATE register_form SET entry_number = "' . $new_entry_number . '" WHERE race_id = ' . $race_id . ' AND user_id = ' . $participant['user_id']);
+        }
     }
 }
 
